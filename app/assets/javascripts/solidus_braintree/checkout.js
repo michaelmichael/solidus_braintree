@@ -4,7 +4,7 @@ $(function() {
   /* This provides a default error handler for Braintree. Since we prevent
    * submission if tokenization fails, we need to manually re-enable the
    * submit button. */
-  function braintreeError (err) {
+  function braintreeError(err) {
     SolidusBraintree.config.braintreeErrorHandle(err);
     enableSubmit();
   }
@@ -16,14 +16,14 @@ $(function() {
      * The only way we can re-enable it is by delaying longer than that timeout
      * or stopping propagation so their submit handler doesn't run. */
     if ($.rails && typeof $.rails.enableFormElement !== 'undefined') {
-      setTimeout(function () {
+      setTimeout(function() {
         $.rails.enableFormElement($submitButton);
         $submitButton.attr("disabled", false).removeClass("disabled").addClass("primary");
       }, 100);
     } else if (typeof Rails !== 'undefined' && typeof Rails.enableElement !== 'undefined') {
       /* Indicates that we have rails-ujs instead of jquery-ujs. Rails-ujs was added to rails
        * core in Rails 5.1.0 */
-      setTimeout(function () {
+      setTimeout(function() {
         Rails.enableElement($submitButton[0]);
         $submitButton.attr("disabled", false).removeClass("disabled").addClass("primary");
       }, 100);
@@ -37,11 +37,12 @@ $(function() {
   }
 
   function addFormHook(braintreeForm, hostedField) {
-    $paymentForm.on("submit",function(event) {
+    $paymentForm.on("submit", function(event) {
       var $field = $(hostedField);
 
       if ($field.is(":visible") && !$field.data("submitting")) {
         var $nonce = $("#payment_method_nonce", $field);
+        var $deviceData = $("#device_data", $field);
 
         if ($nonce.length > 0 && $nonce.val() === "") {
           var client = braintreeForm._merchantConfigurationOptions._solidusClient;
@@ -54,6 +55,8 @@ $(function() {
               braintreeError(error);
               return;
             }
+
+            $deviceData.val(client._dataCollectorInstance.deviceData);
 
             $nonce.val(payload.nonce);
 

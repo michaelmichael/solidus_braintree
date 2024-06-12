@@ -6,14 +6,15 @@ SolidusBraintree.HostedForm = function(paymentMethodId) {
 SolidusBraintree.HostedForm.prototype.initialize = function() {
   this.client = SolidusBraintree.createClient({
     paymentMethodId: this.paymentMethodId,
-    useThreeDSecure: (typeof(window.threeDSecureOptions) !== 'undefined'),
+    useThreeDSecure: (typeof (window.threeDSecureOptions) !== 'undefined'),
+    useDataCollector: true
   });
 
   return this.client.initialize().
     then(this._createHostedFields.bind(this));
 };
 
-SolidusBraintree.HostedForm.prototype._createHostedFields = function () {
+SolidusBraintree.HostedForm.prototype._createHostedFields = function() {
   if (!this.client) {
     throw new Error("Client not initialized, please call initialize first!");
   }
